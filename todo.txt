@@ -5,3 +5,6 @@
 - Train model on data to forecast future data, hours left, etc
 - Display data maybe in a prototype UI(take the ui in documents as reference) or in a general form which displays which components are working fine and which have to be checked
 along with prediction of remaining hours
+
+~~ all done 
+Create backend and frontend for this 
