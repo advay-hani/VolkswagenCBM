@@ -6,7 +6,7 @@ from statsmodels.tsa.arima.model import ARIMA
 from pmdarima import auto_arima  # For automated ARIMA tuning
 
 # File path
-csv_path = r"T90.csv"  # Replace with the correct path to your CSV file
+csv_path = r"D:\Github\HeavyVehicleCBM\dataset.csv"  # Replace with the correct path to your CSV file
 
 # Define thresholds for each parameter
 thresholds = {
