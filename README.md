@@ -24,7 +24,7 @@ Visualizations:
 Historical data and forecast trends visualized through graphs.
 Threshold lines and anomaly markers for clarity.
 
-Technologies Used
+Technologies Used:-
 Programming Language:
 Python
 
