@@ -2,12 +2,6 @@ We are creating this project for live tracking of heavy machinary model for CBM.
 
 A dynamic and interactive predictive maintenance application built using Python and Streamlit. This tool forecasts the Remaining Useful Life (RUL) of critical machinery components using ARIMA-based time series modeling and provides actionable maintenance insights to enhance operational efficiency.
 
-
-Here’s a well-structured and detailed README.md for your GitHub repository:
-
-Predictive Maintenance Dashboard
-A dynamic and interactive predictive maintenance application built using Python and Streamlit. This tool forecasts the Remaining Useful Life (RUL) of critical machinery components using ARIMA-based time series modeling and provides actionable maintenance insights to enhance operational efficiency.
-
 Features-
 Core Functionalities:
 Remaining Useful Life (RUL) Estimation:
