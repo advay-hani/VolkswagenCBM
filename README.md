@@ -1,38 +1,34 @@
-We are creating this project for live tracking of heavy machinary model for CBM.
+# 🔧 Predictive Maintenance Dashboard
 
-A dynamic and interactive predictive maintenance application built using Python and Streamlit. This tool forecasts the Remaining Useful Life (RUL) of critical machinery components using ARIMA-based time series modeling and provides actionable maintenance insights to enhance operational efficiency.
+A **Streamlit** application designed for predictive maintenance, enabling users to forecast potential failures based on time series data and provide actionable maintenance insights. This app utilizes ARIMA forecasting and Remaining Useful Life (RUL) estimation to help maintain machinery health.
 
-Features-
-Core Functionalities:
-Remaining Useful Life (RUL) Estimation:
-Calculates RUL for multiple machine parameters based on normalized thresholds.
-Flags potential failures and provides actionable maintenance recommendations.
+## 📋 Table of Contents
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Folder Structure](#folder-structure)
+- [Data Format](#data-format)
+- [Contributing](#contributing)
+- [License](#license)
 
-Dynamic Forecasting:
-Forecast machinery behavior for up to 720 hours (30 days).
-Adjustable forecasting period via an interactive slider.
+## 🚀 Features
 
-Threshold Monitoring:
-Real-time detection of threshold breaches for critical parameters.
-Alerts displayed with specific maintenance recommendations.
+- **RUL Estimation**: Calculates Remaining Useful Life (RUL) for multiple parameters using threshold detection.
+- **ARIMA Forecasting**: Provides time series forecasting using the ARIMA model for selected parameters.
+- **Interactive Visualization**: Displays historical and forecasted data with threshold lines for easy identification of potential issues.
+- **Maintenance Recommendations**: Suggests specific maintenance actions based on parameter threshold crossings.
 
-ARIMA Model Integration:
-Auto-tuning of ARIMA parameters using pmdarima.
-ACF and PACF plots for detailed time series analysis.
+## 🛠️ Installation
 
-Visualizations:
-Historical data and forecast trends visualized through graphs.
-Threshold lines and anomaly markers for clarity.
+1. **Clone the repository**:
+```bash
+   git clone https://github.com/your-username/predictive-maintenance.git
+   cd predictive-maintenance
 
-Technologies Used:-
-Programming Language:
-Python
+## Install the required packages:
 
-Libraries:
-Streamlit: For creating the web-based User Interface.
-pandas: Data handling and preprocessing.
-NumPy: Numerical computations.
-matplotlib: For plotting historical and forecasted data.
-statsmodels: ARIMA model implementation and ACF/PACF visualization.
-pmdarima: Automated ARIMA model selection.
-scikit-learn: Data normalization using MinMaxScaler.
+2. **bash**
+```bash
+Copy code
+pip install -r requirements.txt
+
