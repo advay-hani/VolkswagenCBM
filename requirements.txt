@@ -8,3 +8,4 @@ matplotlib>=3.7.0
 statsmodels>=0.14.0
 plotly>=5.15.0
 cython>=0.29.30
+setuptools>=58.0.0
