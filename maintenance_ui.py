@@ -1,45 +1,33 @@
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
+import plotly.graph_objects as go
 import streamlit as st
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 from statsmodels.tsa.arima.model import ARIMA
-from pmdarima import auto_arima  # For automated ARIMA tuning
+from pmdarima import auto_arima
 import warnings
+
 warnings.filterwarnings("ignore")
 
-# Define a function to process the data
+# Function to process the data
 def process_data(csv_path):
-    # Load the CSV
     df = pd.read_csv(csv_path)
-
-    # Convert timestamp column to datetime if it exists
     if 'timestamp' in df.columns:
         df['timestamp'] = pd.to_datetime(df['timestamp'])
         df.set_index('timestamp', inplace=True)
-
-    # Ensure numeric values
     df = df.apply(pd.to_numeric, errors='coerce')
     return df
 
-# Define thresholds for each parameter
+# Thresholds for each parameter
 thresholds = {
-    'vibr_1_X': 27.9,
-    'vibr_1_Y': 27.9,
-    'vibr_1_Z': 27.9,
-    'vibr_1_noise': 99.2,
-    'vibr_2_X': 27.9,
-    'vibr_2_Y': 27.9,
-    'vibr_2_Z': 27.9,
-    'vibr_2_noise': 107.3,
-    'oil_temp': 100,
-    'cool_temp': 104,
-    'oil_pressure': 300,
-    'total_rms_vibr': 50,
-    'total_rms_noise': 50,
+    'vibr_1_X': 27.9, 'vibr_1_Y': 27.9, 'vibr_1_Z': 27.9,
+    'vibr_1_noise': 99.2, 'vibr_2_X': 27.9, 'vibr_2_Y': 27.9,
+    'vibr_2_Z': 27.9, 'vibr_2_noise': 107.3, 'oil_temp': 100,
+    'cool_temp': 104, 'oil_pressure': 100,
+    'total_rms_vibr': 50, 'total_rms_noise': 50
 }
 
-# Define maintenance actions
+# Maintenance actions
 maintenance_actions = {
     'vibr_1_X': "Check and replace vibration dampeners.",
     'vibr_1_Y': "Inspect the foundation and tighten bolts.",
@@ -58,65 +46,74 @@ maintenance_actions = {
 
 # Streamlit app
 def main():
-    st.title("Maintenance Prediction and Forecasting")
+    st.title("Maintenance Prediction and Forecasting with Animations")
 
-    # File upload section
     csv_file = st.file_uploader("Upload your CSV file", type=["csv"])
-    
+
     if csv_file is not None:
         df = process_data(csv_file)
         st.write("Data preview", df.head())
 
         maintenance_needed = {}
-        # Loop through each threshold and analyze the data
+        animated_columns = []
+
         for column in thresholds.keys():
             if column in df.columns:
                 st.write(f"Processing: {column}")
 
-                # ACF/PACF Analysis
-                st.write(f"Generating ACF/PACF plots for {column}...")
-                fig, ax = plt.subplots(1, 2, figsize=(12, 5))
-                plot_acf(df[column].dropna(), ax=ax[0], lags=40)
-                plot_pacf(df[column].dropna(), ax=ax[1], lags=40)
-                st.pyplot(fig)
-
                 # Automated ARIMA selection
-                st.write(f"Tuning ARIMA parameters for {column}...")
                 try:
-                    model_auto = auto_arima(df[column].dropna(), seasonal=False, trace=True, error_action='ignore', suppress_warnings=True)
-                    st.write(model_auto.summary())
-
-                    # Forecast
+                    model_auto = auto_arima(df[column].dropna(), seasonal=False, trace=False, error_action='ignore', suppress_warnings=True)
+                    forecast_period = st.slider(f"Select forecast period for {column} (hours)", min_value=1, max_value=720, value=720, step=24)
+                    
+                    # ARIMA model and forecast
                     model = ARIMA(df[column].dropna(), order=model_auto.order).fit()
-                    forecast = model.predict(start=len(df), end=len(df) + 30 * 24, dynamic=True)
+                    forecast = model.predict(start=len(df), end=len(df) + forecast_period, dynamic=True)
                     future_dates = pd.date_range(start=df.index[-1], periods=len(forecast), freq='H')
 
                     # Check threshold violations
                     if np.any(forecast > thresholds[column]):
                         maintenance_needed[column] = maintenance_actions[column]
+                        animated_columns.append(column)
 
-                    # Plot historical data and forecast
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.plot(df[column], label='Historical Data', color='blue')
-                    ax.plot(future_dates, forecast, label='Forecast', color='green', linestyle='dashed')
-                    ax.axhline(y=thresholds[column], color='red', linestyle='dotted', label='Threshold')
-                    ax.set_title(f"{column} Analysis")
-                    ax.set_xlabel("Time")
-                    ax.set_ylabel("Value")
-                    ax.legend()
-                    ax.grid()
-                    st.pyplot(fig)
+                    # Create an animated Plotly graph
+                    fig = go.Figure()
+                    fig.add_trace(go.Scatter(x=df.index, y=df[column], mode='lines', name='Historical Data'))
+                    fig.add_trace(go.Scatter(x=future_dates, y=forecast, mode='lines+markers', name='Forecast', line=dict(dash='dot')))
+                    
+                    # Animation frames
+                    frames = [go.Frame(data=[go.Scatter(x=future_dates[:i], y=forecast[:i], mode='lines', line=dict(color='green'))],
+                                       name=str(i)) for i in range(1, len(future_dates))]
+                    
+                    # Layout and animation settings
+                    fig.update_layout(title=f"{column} Analysis with Animated Forecast",
+                                      xaxis_title="Time", yaxis_title="Value",
+                                      updatemenus=[dict(type="buttons",
+                                                        buttons=[dict(label="Play",
+                                                                      method="animate",
+                                                                      args=[None, {"frame": {"duration": 50, "redraw": True},
+                                                                                   "fromcurrent": True}]),
+                                                                 dict(label="Pause",
+                                                                      method="animate",
+                                                                      args=[[None], {"frame": {"duration": 0, "redraw": False},
+                                                                                     "mode": "immediate"}])])])
+                    
+                    fig.update(frames=frames)
+                    fig.add_hline(y=thresholds[column], line_dash="dot", line_color="red", annotation_text="Threshold", annotation_position="bottom right")
+
+                    # Display the animated graph
+                    st.plotly_chart(fig)
 
                 except Exception as e:
-                    st.write(f"Error processing column {column}: {e}")
+                    st.write(f"Error processing column {column}: {str(e)}")
 
-        # Display maintenance actions
+        # Display animated alerts if maintenance is needed
         if maintenance_needed:
-            st.write("Maintenance required for the following parameters:")
+            st.write("⚠️ Maintenance Alerts ⚠️")
             for param, action in maintenance_needed.items():
-                st.write(f"{param}: {action}")
+                st.metric(label=param, value=f"⚠️ {action}")
         else:
-            st.write("No maintenance required.")
+            st.success("No maintenance required. All systems normal. ✅")
 
-if __name__ == "_main_":
+if __name__ == "__main__":
     main()
