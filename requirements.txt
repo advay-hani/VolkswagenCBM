@@ -1,3 +1,5 @@
+pip uninstall -y scipy scikit-learn
+pip install --no-binary scipy scikit-learn
 streamlit>=1.25.0
 pandas>=2.0.0
 numpy>=1.23.0
