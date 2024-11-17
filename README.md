@@ -29,7 +29,7 @@ Programming Language:
 Python
 
 Libraries:
-Streamlit: For creating the web-based UI.
+Streamlit: For creating the web-based User Interface.
 pandas: Data handling and preprocessing.
 NumPy: Numerical computations.
 matplotlib: For plotting historical and forecasted data.
